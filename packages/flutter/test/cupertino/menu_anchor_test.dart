@@ -4105,12 +4105,11 @@ void main() {
           darkColor: Color.fromRGBO(150, 0, 0, 1),
         );
 
-        const decoration = WidgetStateProperty<BoxDecoration>.fromMap(
-          <WidgetStatesConstraint, BoxDecoration>{
-            WidgetState.dragged: BoxDecoration(color: customSwipedColor),
-            WidgetState.any: BoxDecoration(),
-          },
-        );
+        const decoration =
+            WidgetStateProperty<BoxDecoration>.fromMap(<WidgetStatesConstraint, BoxDecoration>{
+              WidgetState.dragged: BoxDecoration(color: customSwipedColor),
+              WidgetState.any: BoxDecoration(),
+            });
 
         BoxDecoration getItemDecoration(Tag tag) {
           return tester

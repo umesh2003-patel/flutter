@@ -1847,81 +1847,77 @@ void main() {
       expect(modalBarrierAnimation.value, _white);
     });
 
-    testWidgets(
-      'modal route semantics order',
-      (WidgetTester tester) async {
-        // Regression test for https://github.com/flutter/flutter/issues/46625.
-        final semantics = SemanticsTester(tester);
-        await tester.pumpWidget(
-          TestWidgetsApp(
-            home: Builder(
-              builder: (BuildContext context) {
-                return Center(
-                  child: TestButton(
-                    child: const Text('X'),
-                    onPressed: () {
-                      Navigator.of(context).push<void>(
-                        _TestDialogRouteWithCustomBarrierCurve<void>(
-                          child: const Text('Hello World'),
-                          barrierLabel: 'test label',
-                          barrierCurve: Curves.linear,
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
+    testWidgets('modal route semantics order', (WidgetTester tester) async {
+      // Regression test for https://github.com/flutter/flutter/issues/46625.
+      final semantics = SemanticsTester(tester);
+      await tester.pumpWidget(
+        TestWidgetsApp(
+          home: Builder(
+            builder: (BuildContext context) {
+              return Center(
+                child: TestButton(
+                  child: const Text('X'),
+                  onPressed: () {
+                    Navigator.of(context).push<void>(
+                      _TestDialogRouteWithCustomBarrierCurve<void>(
+                        child: const Text('Hello World'),
+                        barrierLabel: 'test label',
+                        barrierCurve: Curves.linear,
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           ),
-        );
+        ),
+      );
 
-        await tester.tap(find.text('X'));
-        await tester.pumpAndSettle();
-        expect(find.text('Hello World'), findsOneWidget);
+      await tester.tap(find.text('X'));
+      await tester.pumpAndSettle();
+      expect(find.text('Hello World'), findsOneWidget);
 
-        final expectedSemantics = TestSemantics.root(
-          children: <TestSemantics>[
-            TestSemantics.rootChild(
-              id: 1,
-              rect: TestSemantics.fullScreen,
-              children: <TestSemantics>[
-                TestSemantics(
-                  id: 6,
-                  rect: TestSemantics.fullScreen,
-                  children: <TestSemantics>[
-                    TestSemantics(
-                      id: 7,
-                      rect: TestSemantics.fullScreen,
-                      flags: <SemanticsFlag>[SemanticsFlag.scopesRoute],
-                      children: <TestSemantics>[
-                        TestSemantics(
-                          id: 8,
-                          label: 'Hello World',
-                          rect: TestSemantics.fullScreen,
-                          textDirection: TextDirection.ltr,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                // Modal barrier is put after modal scope
-                TestSemantics(
-                  id: 5,
-                  rect: TestSemantics.fullScreen,
-                  actions: <SemanticsAction>[SemanticsAction.tap, SemanticsAction.dismiss],
-                  label: 'test label',
-                  textDirection: TextDirection.ltr,
-                ),
-              ],
-            ),
-          ],
-        );
+      final expectedSemantics = TestSemantics.root(
+        children: <TestSemantics>[
+          TestSemantics.rootChild(
+            id: 1,
+            rect: TestSemantics.fullScreen,
+            children: <TestSemantics>[
+              TestSemantics(
+                id: 6,
+                rect: TestSemantics.fullScreen,
+                children: <TestSemantics>[
+                  TestSemantics(
+                    id: 7,
+                    rect: TestSemantics.fullScreen,
+                    flags: <SemanticsFlag>[SemanticsFlag.scopesRoute],
+                    children: <TestSemantics>[
+                      TestSemantics(
+                        id: 8,
+                        label: 'Hello World',
+                        rect: TestSemantics.fullScreen,
+                        textDirection: TextDirection.ltr,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              // Modal barrier is put after modal scope
+              TestSemantics(
+                id: 5,
+                rect: TestSemantics.fullScreen,
+                actions: <SemanticsAction>[SemanticsAction.tap, SemanticsAction.dismiss],
+                label: 'test label',
+                textDirection: TextDirection.ltr,
+              ),
+            ],
+          ),
+        ],
+      );
 
-        expect(semantics, hasSemantics(expectedSemantics));
-        semantics.dispose();
-      },
-      variant: const TargetPlatformVariant(<TargetPlatform>{TargetPlatform.iOS}),
-    );
+      expect(semantics, hasSemantics(expectedSemantics));
+      semantics.dispose();
+    }, variant: const TargetPlatformVariant(<TargetPlatform>{TargetPlatform.iOS}));
 
     testWidgets('focus traversal is correct when popping multiple pages simultaneously', (
       WidgetTester tester,
